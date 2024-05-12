@@ -3,6 +3,7 @@ const app = express();
 const PORT = process.env.PORT || 4001;
 const { transporter } = require('./util/sendMail.js');
 const { run, client, close } = require('./util/connectMongodb')
+const callWriteFunction = require('./util/callSmartContract.js')
 var bodyParser = require('body-parser');
 var http = require('http');
 var { expressjwt: jwt } = require("express-jwt");
@@ -12,11 +13,11 @@ var cors = require('cors');
 const ethers = require('ethers');
 const crypto = require('crypto'); //sha256 Object
 const multer = require('multer');
+const { ObjectId } = require('mongodb')
 const { Readable } = require('stream');
 // multer config
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
-const pinFileToIPFS = require("./util/sendImage.js")
 app.options('*', cors());
 app.use(cors());
 app.use(bodyParser.json());
@@ -49,8 +50,6 @@ app.use(function (req, res, next) {
             });
             return;
         } else {
-            // add the decoded user name and org name to the request object
-            // for the downstream code to use
             req.id = decoded.id;
             req.iat = decoded.iat;
             return next();
@@ -253,8 +252,8 @@ app.post('/users/login', async function (req, res) {
         for (let i = 0; i < 6; i++) {
             otp += chars[Math.floor(Math.random() * chars.length)];
         }
-        console.log("this is otp", otp)
-        if (sendOTP(credential, otp)) {
+        const sendStatus = await sendOTP(credential, otp)
+        if (sendStatus) {
             const insertOTP = async () => {
                 const col = client.db("Autheticate").collection("OTPcode")
                 const clean = await client.db("Autheticate").collection("OTPcode").deleteMany({ credential: credential })
@@ -275,14 +274,23 @@ app.post('/users/login', async function (req, res) {
         console.log(er)
     }
 });
-app.post('/uploadImage', upload.single('file'), async function (req, res) {
+app.post('/invokeTransaction', async function (req, res) {
     try {
-        const file = req.file;
-        const response = await pinFileToIPFS(file)
-        res.json(response)
-
+        const db = client.db("Autheticate")
+        const id = new ObjectId(req.id)
+        const findPrivateKey = await db.collection("accounts").findOne({ _id: id })
+        console.log(findPrivateKey)
+        if (typeof req.body.args === 'string') {
+            req.body.args = JSON.parse(req.body.args);
+        }
+        if (findPrivateKey) {
+            const rs = await callWriteFunction(req.body.func, req.body.args, findPrivateKey.private_key)
+            res.send(rs)
+        }
     } catch (e) {
-        console.log(e)
+        res.json({
+            message: "some thing is wrong"
+        })
     }
 
 })

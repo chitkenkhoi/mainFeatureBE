@@ -1,0 +1,698 @@
+[
+    {
+        "inputs": [],
+        "stateMutability": "nonpayable",
+        "type": "constructor"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "_companyId",
+                "type": "uint256"
+            },
+            {
+                "indexed": false,
+                "internalType": "string",
+                "name": "_name",
+                "type": "string"
+            },
+            {
+                "indexed": false,
+                "internalType": "string",
+                "name": "_email",
+                "type": "string"
+            },
+            {
+                "indexed": false,
+                "internalType": "string",
+                "name": "_taxCode",
+                "type": "string"
+            },
+            {
+                "indexed": false,
+                "internalType": "enum Traceability.CompanyType",
+                "name": "_companyType",
+                "type": "uint8"
+            },
+            {
+                "indexed": false,
+                "internalType": "string",
+                "name": "_phone",
+                "type": "string"
+            },
+            {
+                "indexed": false,
+                "internalType": "string",
+                "name": "_website",
+                "type": "string"
+            },
+            {
+                "indexed": false,
+                "internalType": "string[]",
+                "name": "_certificateImage",
+                "type": "string[]"
+            },
+            {
+                "indexed": false,
+                "internalType": "string",
+                "name": "_address",
+                "type": "string"
+            },
+            {
+                "indexed": false,
+                "internalType": "bool",
+                "name": "isVerify",
+                "type": "bool"
+            },
+            {
+                "indexed": false,
+                "internalType": "address",
+                "name": "publicKey",
+                "type": "address"
+            }
+        ],
+        "name": "CompanyEvent",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "productId",
+                "type": "uint256"
+            },
+            {
+                "indexed": false,
+                "internalType": "string",
+                "name": "name",
+                "type": "string"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "size",
+                "type": "uint256"
+            },
+            {
+                "indexed": false,
+                "internalType": "string",
+                "name": "unit",
+                "type": "string"
+            },
+            {
+                "indexed": false,
+                "internalType": "bool",
+                "name": "isActive",
+                "type": "bool"
+            },
+            {
+                "indexed": false,
+                "internalType": "address",
+                "name": "owner",
+                "type": "address"
+            },
+            {
+                "indexed": false,
+                "internalType": "string",
+                "name": "description",
+                "type": "string"
+            },
+            {
+                "indexed": false,
+                "internalType": "string",
+                "name": "media",
+                "type": "string"
+            },
+            {
+                "indexed": false,
+                "internalType": "string",
+                "name": "QRcode",
+                "type": "string"
+            },
+            {
+                "indexed": false,
+                "internalType": "string",
+                "name": "ownerCompanyName",
+                "type": "string"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "ownerCompanyId",
+                "type": "uint256"
+            }
+        ],
+        "name": "ProductEvent",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "stepId",
+                "type": "uint256"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "time",
+                "type": "uint256"
+            },
+            {
+                "indexed": false,
+                "internalType": "string",
+                "name": "description",
+                "type": "string"
+            },
+            {
+                "indexed": false,
+                "internalType": "string",
+                "name": "media",
+                "type": "string"
+            },
+            {
+                "indexed": false,
+                "internalType": "address",
+                "name": "owner",
+                "type": "address"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "productId",
+                "type": "uint256"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "phaseId",
+                "type": "uint256"
+            },
+            {
+                "indexed": false,
+                "internalType": "bool",
+                "name": "isActive",
+                "type": "bool"
+            },
+            {
+                "indexed": false,
+                "internalType": "string",
+                "name": "ownerCompanyName",
+                "type": "string"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "ownerCompanyId",
+                "type": "uint256"
+            }
+        ],
+        "name": "StepEvent",
+        "type": "event"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "_newUser",
+                "type": "address"
+            },
+            {
+                "internalType": "uint256",
+                "name": "_productId",
+                "type": "uint256"
+            }
+        ],
+        "name": "NextPhase",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "companyId",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "_size",
+                "type": "uint256"
+            },
+            {
+                "internalType": "string",
+                "name": "_unit",
+                "type": "string"
+            },
+            {
+                "internalType": "string",
+                "name": "_name",
+                "type": "string"
+            },
+            {
+                "internalType": "string",
+                "name": "_description",
+                "type": "string"
+            },
+            {
+                "internalType": "string",
+                "name": "_media",
+                "type": "string"
+            },
+            {
+                "internalType": "string",
+                "name": "_QRcode",
+                "type": "string"
+            }
+        ],
+        "name": "createProduct",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "name": "currentPhaseOfProduct",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "_stepId",
+                "type": "uint256"
+            }
+        ],
+        "name": "deleteStep",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "name": "information",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "id",
+                "type": "uint256"
+            },
+            {
+                "internalType": "string",
+                "name": "name",
+                "type": "string"
+            },
+            {
+                "internalType": "string",
+                "name": "email",
+                "type": "string"
+            },
+            {
+                "internalType": "string",
+                "name": "taxCode",
+                "type": "string"
+            },
+            {
+                "internalType": "enum Traceability.CompanyType",
+                "name": "companyType",
+                "type": "uint8"
+            },
+            {
+                "internalType": "string",
+                "name": "phone",
+                "type": "string"
+            },
+            {
+                "internalType": "string",
+                "name": "website",
+                "type": "string"
+            },
+            {
+                "internalType": "string",
+                "name": "location_address",
+                "type": "string"
+            },
+            {
+                "internalType": "bool",
+                "name": "isVerify",
+                "type": "bool"
+            },
+            {
+                "internalType": "address",
+                "name": "publicKey",
+                "type": "address"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "name": "isRegister",
+        "outputs": [
+            {
+                "internalType": "bool",
+                "name": "",
+                "type": "bool"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "string",
+                "name": "_name",
+                "type": "string"
+            },
+            {
+                "internalType": "string",
+                "name": "_email",
+                "type": "string"
+            },
+            {
+                "internalType": "string",
+                "name": "_phone",
+                "type": "string"
+            },
+            {
+                "internalType": "string",
+                "name": "_website",
+                "type": "string"
+            },
+            {
+                "internalType": "string[]",
+                "name": "_certificateImage",
+                "type": "string[]"
+            },
+            {
+                "internalType": "string",
+                "name": "_address",
+                "type": "string"
+            }
+        ],
+        "name": "modifyCompanyInfo",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "owner",
+        "outputs": [
+            {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "productId",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "name": "productInfo",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "id",
+                "type": "uint256"
+            },
+            {
+                "internalType": "string",
+                "name": "name",
+                "type": "string"
+            },
+            {
+                "internalType": "uint256",
+                "name": "size",
+                "type": "uint256"
+            },
+            {
+                "internalType": "string",
+                "name": "unit",
+                "type": "string"
+            },
+            {
+                "internalType": "bool",
+                "name": "isActive",
+                "type": "bool"
+            },
+            {
+                "internalType": "address",
+                "name": "owner",
+                "type": "address"
+            },
+            {
+                "internalType": "string",
+                "name": "description",
+                "type": "string"
+            },
+            {
+                "internalType": "string",
+                "name": "media",
+                "type": "string"
+            },
+            {
+                "internalType": "string",
+                "name": "QRcode",
+                "type": "string"
+            },
+            {
+                "internalType": "string",
+                "name": "ownerCompanyName",
+                "type": "string"
+            },
+            {
+                "internalType": "uint256",
+                "name": "ownerCompanyId",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "string",
+                "name": "_name",
+                "type": "string"
+            },
+            {
+                "internalType": "string",
+                "name": "_email",
+                "type": "string"
+            },
+            {
+                "internalType": "string",
+                "name": "_taxCode",
+                "type": "string"
+            },
+            {
+                "internalType": "enum Traceability.CompanyType",
+                "name": "_companyType",
+                "type": "uint8"
+            },
+            {
+                "internalType": "string",
+                "name": "_phone",
+                "type": "string"
+            },
+            {
+                "internalType": "string",
+                "name": "_website",
+                "type": "string"
+            },
+            {
+                "internalType": "string[]",
+                "name": "_certificateImage",
+                "type": "string[]"
+            },
+            {
+                "internalType": "string",
+                "name": "_address",
+                "type": "string"
+            }
+        ],
+        "name": "registerCompany",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "stepId",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "name": "stepInfo",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "id",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "time",
+                "type": "uint256"
+            },
+            {
+                "internalType": "string",
+                "name": "description",
+                "type": "string"
+            },
+            {
+                "internalType": "string",
+                "name": "media",
+                "type": "string"
+            },
+            {
+                "internalType": "address",
+                "name": "owner",
+                "type": "address"
+            },
+            {
+                "internalType": "uint256",
+                "name": "productId",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "phaseId",
+                "type": "uint256"
+            },
+            {
+                "internalType": "bool",
+                "name": "isActive",
+                "type": "bool"
+            },
+            {
+                "internalType": "string",
+                "name": "ownerCompanyName",
+                "type": "string"
+            },
+            {
+                "internalType": "uint256",
+                "name": "ownerCompanyId",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address[]",
+                "name": "_companyAddresses",
+                "type": "address[]"
+            }
+        ],
+        "name": "verifyCompanies",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "_productId",
+                "type": "uint256"
+            },
+            {
+                "internalType": "string",
+                "name": "_description",
+                "type": "string"
+            },
+            {
+                "internalType": "string",
+                "name": "_media",
+                "type": "string"
+            }
+        ],
+        "name": "writeDiary",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    }
+]
