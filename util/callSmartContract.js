@@ -60,12 +60,17 @@ async function callWriteFunction(func, obj, privateKey) {
     try {
         switch (func) {
             case 'registerCompany':
+                console.log("run1=============================================")
+                console.log(obj, typeof obj.companytype, typeof obj.certificateImage)
                 state.tx = await connector.registerCompany(obj.name, obj.email, obj.taxcode, obj.companytype, obj.phone, obj.website, obj.certificateImage, obj.address);
                 break;
             case 'createProduct':
+                console.log("run2=============================================")
                 state.tx = await connector.createProduct(obj.size, obj.unit, obj.name, obj.description, obj.media)
+
                 break;
             case 'writeDiary':
+                console.log("run3=============================================")
                 state.tx = await connector.writeDiary(obj.productId, obj.description, obj.media)
                 break;
             case 'modifyCompanyInfo':
@@ -101,13 +106,15 @@ async function callWriteFunction(func, obj, privateKey) {
 
 }
 module.exports = callWriteFunction
-// const obj = {
-//     name: "abcdde",
-//     email: "a",
-//     phone: "1234",
-//     website: "a",
-//     certificateImage: ["a"],
-//     address: "a",
-// }
-// // Call the function
-// callWriteFunction('modifyCompanyInfo', obj, "5059ecb3aa11cc42a01edb445fb85ee9ea2041de1c274b54161c2680bd659030");
+const obj = {
+    name: 'CompanyX',
+    email: 'companyx@gmail.com',
+    taxcode: '123456',
+    companytype: 0,
+    phone: '0982923021',
+    website: 'abc.com',
+    certificateImage: ['a', 'b'],
+    address: 'abc'
+}
+// Call the function
+// callWriteFunction('registerCompany', obj, "0xaf86c7f19cd798cfc6590efbc49a146bf72abbc897c982b855c05a0d23f353b9");

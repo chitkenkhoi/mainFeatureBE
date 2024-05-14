@@ -14,7 +14,8 @@ const ethers = require('ethers');
 const crypto = require('crypto'); //sha256 Object
 const multer = require('multer');
 const { ObjectId } = require('mongodb')
-const { Readable } = require('stream');
+const sendMoney = require('./util/sendMoney.js')
+const { connectRedis, geter, seter } = require('./util/redis.js')
 // multer config
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
@@ -34,13 +35,15 @@ app.use(jwt({
     path: ['/users/login', '/users/register', '/users/login/validateOTP', '/users/register/validateOTP', 'users/resendOTP']
 }));
 app.use(bearerToken());
+run();
+connectRedis();
 app.use(function (req, res, next) {
     if (req.originalUrl.indexOf('/users') >= 0) {
         return next();
     }
 
     var token = req.token;
-    JWT.verify(token, app.get('secret'), function (err, decoded) {
+    JWT.verify(token, app.get('secret'), async function (err, decoded) {
         if (err) {
             res.send({
                 success: false,
@@ -50,14 +53,33 @@ app.use(function (req, res, next) {
             });
             return;
         } else {
+
             req.id = decoded.id;
+            const verify = async () => {
+                const result = await geter(`${decoded.id}_logout`)
+                return result
+            }
+            const result = await verify()
+            console.log(result)
+            if (result) {
+                if (parseInt(decoded.iat) < parseInt(result)) {
+                    console.log(decoded.iat, result)
+                    res.send({
+                        success: false,
+                        message: 'Session ended'
+                    });
+                    return;
+                }
+            }
+            req.publickey = decoded.publickey
             req.iat = decoded.iat;
+            req.isData = decoded.isData
             return next();
         }
     });
 });
 
-run();
+
 function getErrorMessage(field) {
     var response = {
         success: false,
@@ -86,10 +108,30 @@ app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
 app.get('/token/validate', async function (req, res) {
-    res.json({
-        message: "Valid token",
-        name: "Le Quang Khoi"
-    })
+    console.log(typeof req.isData, "this is type=================")
+    if (req.isData) {
+        res.json({
+            message: "Valid token",
+            name: "Le Quang Khoi",
+            publickey: req.publickey,
+            noti: false
+        })
+    } else {
+        const result = await geter(`${req.id}_isData`)
+        if (result) {
+            res.json({
+                message: "Please login again"
+            })
+            return
+        }
+        res.json({
+            message: "Valid token",
+            name: "Le Quang Khoi",
+            publickey: req.publickey,
+            noti: true
+        })
+    }
+
 })
 app.post('/users/register', async function (req, res) {
     try {
@@ -139,7 +181,6 @@ app.post('/users/register/validateOTP', async function (req, res) {
         const OTP = req.body.OTP
         const email = req.body.email
         const db = client.db("Autheticate")
-
         var doc = await db.collection("OTPcode").findOne({ credential: email, OTP: OTP });
         if (doc) {
             await db.collection("OTPcode").deleteMany({ credential: email })
@@ -147,24 +188,34 @@ app.post('/users/register/validateOTP', async function (req, res) {
             const randomWallet = ethers.Wallet.createRandom();
             const publickey = randomWallet.address;
             const privatekey = randomWallet.privateKey;
-
-            var document = { public_key: publickey, private_key: privatekey, credential: email, hash_password: cache_doc.hash_password }
+            var document = { public_key: publickey, private_key: privatekey, credential: email, hash_password: cache_doc.hash_password, isData: false }
             const result = await db.collection("accounts").insertOne(document)
+            const find = await db.collection("accounts").findOne({ credential: email })
             var token = JWT.sign({
                 exp: Math.floor(Date.now() / 1000) + 3600,
-                id: result._id
+                id: find._id,
+                publickey: publickey,
+                isData: false
             }, app.get('secret'));
             var response = {
                 message: "Auth ok",
-                token: token
+                token: token,
             }
             await db.collection("CacheRegister").deleteMany({ credential: email })
+            const resp = await sendMoney(publickey)
+            if (!resp.success) {
+                var response = {
+                    message: "Some thing is wrong please try again"
+                }
+            }
+
         } else {
             var response = {
                 message: "OTP is wrong"
             }
         }
         res.json(response)
+
 
     } catch (e) {
         console.log(e)
@@ -215,7 +266,9 @@ app.post('/users/login/validateOTP', async function (req, res) {
             const clean = await db.collection("OTPcode").deleteMany({ credential: email })
             var token = JWT.sign({
                 exp: Math.floor(Date.now() / 1000) + 3600,
-                id: result._id
+                id: result._id,
+                publickey: result.public_key,
+                isData: result.isData
             }, app.get('secret'));
             var response = {
                 message: "Auth ok",
@@ -282,10 +335,26 @@ app.post('/invokeTransaction', async function (req, res) {
         console.log(findPrivateKey)
         if (typeof req.body.args === 'string') {
             req.body.args = JSON.parse(req.body.args);
+            console.log("runned============================")
         }
+        console.log(req.body.args)
         if (findPrivateKey) {
             const rs = await callWriteFunction(req.body.func, req.body.args, findPrivateKey.private_key)
+            if (rs.success && req.body.func === "registerCompany") {
+                const updateOperation = {
+                    $set: {
+                        // Update fields and values you want to change
+                        isData: true,
+                    }
+                };
+                const result = await db.collection("accounts").updateOne({ _id: id }, updateOperation);
+                await seter(`${req.id}_isData`, '1', 3600)
+            }
             res.send(rs)
+        } else {
+            res.json({
+                message: "no privatekey"
+            })
         }
     } catch (e) {
         res.json({
@@ -294,3 +363,17 @@ app.post('/invokeTransaction', async function (req, res) {
     }
 
 })
+app.get('/logoutAll', async function (req, res) {
+    const id = req.id
+    const currentTimestampInSeconds = Math.floor(Date.now() / 1000);
+    await seter(`${id}_logout`, currentTimestampInSeconds.toString(), 3600)
+    const result = await geter(`${id}_logout`)
+    console.log(result, typeof result)
+    res.json({
+        message: "success"
+    })
+})
+// app.test('/test', async function (req, res) {
+//     const id = new ObjectId(req.id)
+//     const doc = await db.collection("accounts").findOne({ _id: id })
+// })

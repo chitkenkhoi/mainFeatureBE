@@ -13,6 +13,7 @@ const connectRedis = async () => {
     // xử lý lỗi
     client.on('error', (err) => {
         console.error(`An error occurred with Redis: ${err}`)
+
     })
 
     console.log('Redis connected successfully...')
@@ -21,11 +22,11 @@ const connectRedis = async () => {
 async function test() {
     console.log("connecting")
     await connectRedis()
-    // console.log("============")
-    // await client.SETEX('key', 10, 'something1');
-    // console.log("============")
-    const result = await client.get('key');
+    await client.set('check', '1')
+    const result = await client.get('check');
     console.log(result)
     console.log("============")
+    await client.quit()
+    console.log("closed")
 }
 test();
