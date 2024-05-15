@@ -1,6 +1,6 @@
 const redis = require('redis');
 const client = redis.createClient({
-    password: '0kmmtS5zzWqOuMRi77UiRmscBEzasrmC',
+    password: process.env.REDIS_TOKEN,
     socket: {
         host: 'redis-10927.c252.ap-southeast-1-1.ec2.redns.redis-cloud.com',
         port: 10927

@@ -32,13 +32,13 @@ app.use(jwt({
     secret: 'thisismysecret',
     algorithms: ["HS256"],
 }).unless({
-    path: ['/users/login', '/users/register', '/users/login/validateOTP', '/users/register/validateOTP', 'users/resendOTP']
+    path: ['/users/login', '/users/register', '/users/login/validateOTP', '/users/register/validateOTP', 'users/resendOTP', '/ping']
 }));
 app.use(bearerToken());
 run();
 connectRedis();
 app.use(function (req, res, next) {
-    if (req.originalUrl.indexOf('/users') >= 0) {
+    if (req.originalUrl.indexOf('/users') >= 0 || req.originalUrl.indexOf('/ping') >= 0) {
         return next();
     }
 
@@ -108,7 +108,6 @@ app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
 app.get('/token/validate', async function (req, res) {
-    console.log(typeof req.isData, "this is type=================")
     if (req.isData) {
         res.json({
             message: "Valid token",
@@ -119,8 +118,15 @@ app.get('/token/validate', async function (req, res) {
     } else {
         const result = await geter(`${req.id}_isData`)
         if (result) {
+            var token = JWT.sign({
+                exp: Math.floor(Date.now() / 1000) + 3600,
+                id: req.id,
+                publickey: req.publickey,
+                isData: true
+            }, app.get('secret'));
             res.json({
-                message: "Please login again"
+                message: "Success register on blockchain",
+                token: token
             })
             return
         }
@@ -371,6 +377,11 @@ app.get('/logoutAll', async function (req, res) {
     console.log(result, typeof result)
     res.json({
         message: "success"
+    })
+})
+app.get('/ping', function (req, res) {
+    res.json({
+        message: "pong"
     })
 })
 // app.test('/test', async function (req, res) {

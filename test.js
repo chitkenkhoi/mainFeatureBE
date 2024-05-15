@@ -1,32 +1,32 @@
-const redis = require('redis');
-const client = redis.createClient({
-    socket: {
-        host: "127.0.0.1",
-        port: "6379"
-    }
-})
+const crypto = require('crypto');
 
-const connectRedis = async () => {
-    // kết nối với redis
-    await client.connect()
+// Khóa mã hóa và giải mã. Đảm bảo rằng chúng có cùng độ dài.
+const key = 'key';
+const iv = crypto.randomBytes(16);
 
-    // xử lý lỗi
-    client.on('error', (err) => {
-        console.error(`An error occurred with Redis: ${err}`)
-
-    })
-
-    console.log('Redis connected successfully...')
+// Mã hóa
+function encrypt(text) {
+    const cipher = crypto.createCipheriv('aes-256-cbc', Buffer.from(key), Buffer.from(iv));
+    let encrypted = cipher.update(text);
+    encrypted = Buffer.concat([encrypted, cipher.final()]);
+    return encrypted.toString('hex');
 }
 
-async function test() {
-    console.log("connecting")
-    await connectRedis()
-    await client.set('check', '1')
-    const result = await client.get('check');
-    console.log(result)
-    console.log("============")
-    await client.quit()
-    console.log("closed")
+// Giải mã
+function decrypt(text, key) {
+    const decipher = crypto.createDecipheriv('aes-256-cbc', Buffer.from(key), Buffer.from(iv));
+    let decrypted = decipher.update(Buffer.from(text, 'hex'));
+    decrypted = Buffer.concat([decrypted, decipher.final()]);
+    return decrypted.toString();
+}
+
+const plainText = '0x123456';
+function test() {
+    const encryptedText = encrypt(plainText);
+    const decryptedText = decrypt(encryptedText, "key");
+
+    console.log('Plain Text:', plainText);
+    console.log('Encrypted Text:', encryptedText);
+    console.log('Decrypted Text:', decryptedText);
 }
 test();
