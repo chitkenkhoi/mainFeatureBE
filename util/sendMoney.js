@@ -4,7 +4,7 @@ const provider = new ethers.providers.JsonRpcProvider(process.env.PROVIDER);
 const privateKey = process.env.FAUCET_PRIVATEKEY;
 const wallet = new ethers.Wallet(privateKey, provider);
 
-const amount = ethers.utils.parseEther('0.1'); // Convert ether to wei
+const amount = ethers.utils.parseEther('0.2'); // Convert ether to wei
 const sendMoney = async (toAddress) => {
     const tx = await wallet.sendTransaction({
         to: toAddress,

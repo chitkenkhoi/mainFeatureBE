@@ -123,12 +123,14 @@ module.exports = callWriteFunction
 const obj = {
     name: 'CompanyX',
     email: 'companyx@gmail.com',
-    taxcode: '123456',
-    companytype: 0,
+    // taxcode: '123456',
+    // companytype: 0,
     phone: '0982923021',
     website: 'abc.com',
     certificateImage: ['a', 'b'],
-    address: 'abc'
+    address: 'abc',
+    description: 'abc',
+    logo: '1'
 }
 // Call the function
-// callWriteFunction('registerCompany', obj, "0xaf86c7f19cd798cfc6590efbc49a146bf72abbc897c982b855c05a0d23f353b9");
+// callWriteFunction('modifyCompanyInfo', obj, "0xa2dded12b3c42f98be32b6685474c4e4c2bf72d6e6ea93343888148026b2565c");

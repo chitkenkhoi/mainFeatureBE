@@ -16,6 +16,7 @@ const multer = require('multer');
 const { ObjectId } = require('mongodb')
 const sendMoney = require('./util/sendMoney.js')
 const { connectRedis, geter, seter } = require('./util/redis.js')
+const { encrypt, decrypt } = require('./util/encrypt.js')
 // multer config
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
@@ -194,7 +195,10 @@ app.post('/users/register/validateOTP', async function (req, res) {
             const randomWallet = ethers.Wallet.createRandom();
             const publickey = randomWallet.address;
             const privatekey = randomWallet.privateKey;
-            var document = { public_key: publickey, private_key: privatekey, credential: email, hash_password: cache_doc.hash_password, isData: false }
+            const chars = '0123456789';
+            const pin = req.body.pin;
+            const encrypt_privatekey = encrypt(privatekey, pin)
+            var document = { public_key: publickey, private_key: encrypt_privatekey, credential: email, hash_password: cache_doc.hash_password, isData: false }
             const result = await db.collection("accounts").insertOne(document)
             const find = await db.collection("accounts").findOne({ credential: email })
             var token = JWT.sign({
@@ -206,6 +210,7 @@ app.post('/users/register/validateOTP', async function (req, res) {
             var response = {
                 message: "Auth ok",
                 token: token,
+                pin: pin
             }
             await db.collection("CacheRegister").deleteMany({ credential: email })
             const resp = await sendMoney(publickey)
@@ -338,14 +343,18 @@ app.post('/invokeTransaction', async function (req, res) {
         const db = client.db("Autheticate")
         const id = new ObjectId(req.id)
         const findPrivateKey = await db.collection("accounts").findOne({ _id: id })
+        const pin = req.body.pin
         console.log(findPrivateKey)
+
         if (typeof req.body.args === 'string') {
             req.body.args = JSON.parse(req.body.args);
             console.log("runned============================")
         }
         console.log(req.body.args)
         if (findPrivateKey) {
-            const rs = await callWriteFunction(req.body.func, req.body.args, findPrivateKey.private_key)
+            const privatekey = decrypt(findPrivateKey.private_key, pin)
+            const rs = await callWriteFunction(req.body.func, req.body.args, privatekey)
+            console.log(privatekey)
             if (rs.success && req.body.func === "registerCompany") {
                 const updateOperation = {
                     $set: {
