@@ -28,6 +28,18 @@ async function callWriteFunction(func, obj, privateKey) {
     //     string memory _website,
     //     string[] memory _certificateImage,
     //     string memory _address
+    // function registerCompany(
+    //     string memory _name,
+    //     string memory _email,
+    //     string memory _taxCode,
+    //     CompanyType _companyType,
+    //     string memory _phone,
+    //     string memory _website,
+    //     string[] memory _certificateImage,
+    //     string memory _address,
+    //     string memory _description,
+    //     string memory _logo
+    // )
     // )/////////////////
     // function createProduct(
     //     uint256 _size,
@@ -40,15 +52,18 @@ async function callWriteFunction(func, obj, privateKey) {
     // function writeDiary(
     //     uint256 _productId, 
     //     string memory _description,
-    //     string memory _media
-    // )////
+    //     string memory _media,
+    //     string memory _stepName
+    // )
     // function modifyCompanyInfo(
     //     string memory _name,
     //     string memory _email,
     //     string memory _phone,
     //     string memory _website,
     //     string[] memory _certificateImage,
-    //     string memory _address
+    //     string memory _address,
+    //     string memory _description,
+    //     string memory _logo
     // )
     //  function NextPhase(address _newUser, uint256 _productId)
     // Call the write function
@@ -62,19 +77,18 @@ async function callWriteFunction(func, obj, privateKey) {
             case 'registerCompany':
                 console.log("run1=============================================")
                 console.log(obj, typeof obj.companytype, typeof obj.certificateImage)
-                state.tx = await connector.registerCompany(obj.name, obj.email, obj.taxcode, obj.companytype, obj.phone, obj.website, obj.certificateImage, obj.address);
+                state.tx = await connector.registerCompany(obj.name, obj.email, obj.taxcode, obj.companytype, obj.phone, obj.website, obj.certificateImage, obj.address, obj.description, obj.logo);
                 break;
             case 'createProduct':
                 console.log("run2=============================================")
                 state.tx = await connector.createProduct(obj.size, obj.unit, obj.name, obj.description, obj.media)
-
                 break;
             case 'writeDiary':
                 console.log("run3=============================================")
-                state.tx = await connector.writeDiary(obj.productId, obj.description, obj.media)
+                state.tx = await connector.writeDiary(obj.productId, obj.description, obj.media, obj.stepName)
                 break;
             case 'modifyCompanyInfo':
-                state.tx = await connector.modifyCompanyInfo(obj.name, obj.email, obj.phone, obj.website, obj.certificateImage, obj.address)
+                state.tx = await connector.modifyCompanyInfo(obj.name, obj.email, obj.phone, obj.website, obj.certificateImage, obj.address, obj.description, obj.logo)
                 break;
             case 'NextPhase':
                 state.tx = await connector.NextPhase(obj.newUser, obj.productId)
