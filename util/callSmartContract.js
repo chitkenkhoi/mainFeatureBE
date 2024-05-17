@@ -11,10 +11,12 @@ const provider = new ethers.providers.JsonRpcProvider(process.env.PROVIDER);
 const contractAddress = process.env.CONTRACTADDRESS;
 const contractABI = ABI;
 const contract = new ethers.Contract(contractAddress, contractABI, provider);
-
+var data_emit = ""
+contract.on("ProductEvent", (product, history, from, to, fromId,toId) => {
+    data_emit = product.id.toNumber()
+});
 // Define the function to call the write function of the smart contract
 async function callWriteFunction(func, obj, privateKey) {
-
     // Connect to wallet using private key
     const wallet = new ethers.Wallet(privateKey, provider);
 
@@ -99,7 +101,8 @@ async function callWriteFunction(func, obj, privateKey) {
         state.receipt = await state.tx.wait(1)
         const response = {
             success: true,
-            hash: state.receipt.transactionHash
+            hash: state.receipt.transactionHash,
+            data_emit:data_emit
         }
         console.log(response)
         return response
@@ -120,17 +123,24 @@ async function callWriteFunction(func, obj, privateKey) {
 
 }
 module.exports = callWriteFunction
-const obj = {
-    name: 'CompanyX',
-    email: 'companyx@gmail.com',
-    // taxcode: '123456',
-    // companytype: 0,
-    phone: '0982923021',
-    website: 'abc.com',
-    certificateImage: ['a', 'b'],
-    address: 'abc',
-    description: 'abc',
-    logo: '1'
+// const obj = {
+//     name: 'CompanyX',
+//     email: 'companyx@gmail.com',
+//     // taxcode: '123456',
+//     // companytype: 0,
+//     phone: '0982923021',
+//     website: 'abc.com',
+//     certificateImage: ['a', 'b'],
+//     address: 'abc',
+//     description: 'abc',
+//     logo: '1'
+// }
+const product = {
+    size: 5,
+    unit: "kg",
+    name: "Khoai tây Nhật",
+    description: "Khoai tây trồng mùa đông",
+    media: "QmPggBjuM8vdQ9i7NPmpQdTZss8xEnjfCbGtxSUZPZmQyS"
 }
 // Call the function
-// callWriteFunction('modifyCompanyInfo', obj, "0xa2dded12b3c42f98be32b6685474c4e4c2bf72d6e6ea93343888148026b2565c");
+// callWriteFunction('createProduct', product, "3ff0fead08513f747a0fdc10bd250f635a1d3cb0838e3436b42b7e3f45b1157a");

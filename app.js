@@ -61,10 +61,8 @@ app.use(function (req, res, next) {
                 return result
             }
             const result = await verify()
-            console.log(result)
             if (result) {
                 if (parseInt(decoded.iat) < parseInt(result)) {
-                    console.log(decoded.iat, result)
                     res.send({
                         success: false,
                         message: 'Session ended'
