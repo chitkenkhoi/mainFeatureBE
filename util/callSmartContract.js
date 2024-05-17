@@ -93,6 +93,7 @@ async function callWriteFunction(func, obj, privateKey) {
                 state.tx = await connector.modifyCompanyInfo(obj.name, obj.email, obj.phone, obj.website, obj.certificateImage, obj.address, obj.description, obj.logo)
                 break;
             case 'NextPhase':
+                console.log("run5=============================================")
                 state.tx = await connector.NextPhase(obj.newUser, obj.productId)
                 break;
             default:
