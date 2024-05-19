@@ -167,7 +167,7 @@ app.post('/users/register', async function (req, res) {
             }
             const cleanOldDoc = await db.collection("CacheRegister").deleteMany({ credential: credential })        //xoá hết mk cũ trong cache
             const sha256Hash = crypto.createHash('sha256');
-            sha256Hash.update(req.body.password);
+            sha256Hash.update(credential+req.body.password);
             var hash_password = sha256Hash.digest('hex');
             const doc = { credential: credential, hash_password: hash_password }
             const result = await db.collection("CacheRegister").insertOne(doc)
@@ -298,7 +298,7 @@ app.post('/users/login', async function (req, res) {
     try {
         var credential = req.body.email
         const sha256Hash = crypto.createHash('sha256');
-        sha256Hash.update(req.body.password);
+        sha256Hash.update(credential+req.body.password);
         var hash_password = sha256Hash.digest('hex');
         console.log("This is", hash_password);
         const collection = client.db("Autheticate").collection("accounts")

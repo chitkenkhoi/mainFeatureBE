@@ -18,4 +18,7 @@ function decrypt(encryptedText, key) {
 }
 
 // Example usage
-console.log(decrypt("1865ff21d04af48e64a840781a3c46a8d59377aa34aaedfe9cd8bc0a115027ceed1ac1f9b70f25c6b555742d994b9f8564b68a4ce60e83dc6c9a82f5eb0a9911dbfb8abd3fafd3bbb6157e2f52567bec", "161102"))
+const sha256Hash = crypto.createHash('sha256');
+sha256Hash.update("lequangkhoim@gmail.com"+"123456");
+var hash_password = sha256Hash.digest('hex');
+console.log(hash_password)
